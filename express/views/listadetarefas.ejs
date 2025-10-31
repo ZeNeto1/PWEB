@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <h1><%= title %></h1>
+
+<h2>Minhas Tarefas:</h2>
+<ul>
+  <% tarefasDaView.forEach(tarefa => { %>
+    <li>
+      <% if (tarefa.concluida) { %>
+        <s style="color: rgb(0, 0, 0);"><%= tarefa.nome %></s>
+      <% } else { %>
+        <strong><%= tarefa.nome %></strong>
+      <% } %>
+    </li>
+  <% }); %>
+</ul>
+</body>
+</html>
