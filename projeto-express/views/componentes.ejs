@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <style>
+    .error { color: #b00020; font-size: 0.95em; margin-top: 4px; }
+    .field { margin-bottom: 1rem; }
+    .field input[type="text"],
+    .field input[type="email"],
+    .field input[type="number"],
+    .field select,
+    .field textarea { width: 100%; max-width: 520px; padding: 8px; }
+    .hint { color: #555; font-size: .9em; }
+  </style>
+</head>
+<body>
+  <h1><%= title %></h1>
+
+  <form method="post" action="/componentes" novalidate>
+    <!-- Nome -->
+    <div class="field">
+    <label for="nome">Nome*</label><br/>
+    <select id="nome" name="nome" required>
+        <option value="">Selecione seu nome...</option>
+        <option value="mario" <%= data.nome === 'mario' ? 'selected' : '' %>>Mario</option>
+        <option value="luigi" <%= data.nome === 'luigi' ? 'selected' : '' %>>Luigi</option>
+        <option value="peach" <%= data.nome === 'peach' ? 'selected' : '' %>>Princesa Peach</option>
+        <option value="bowser" <%= data.nome === 'bowser' ? 'selected' : '' %>>Bowser</option>
+    </select>
+    <% if (errors.nome) { %><div class="error"><%= errors.nome.msg %></div><% } %>
+    </div>
+
+    <!-- Idade (obrigatório digitado) -->
+    <div class="field">
+      <label for="idade">Idade*</label><br/>
+      <input id="idade" name="idade" type="text" value="<%= (data.idade ?? '') %>" required/>
+      <div class="hint">Escreva sua idade.</div>
+      <% if (errors.idade) { %><div class="error"><%= errors.idade.msg %></div><% } %>
+    </div>
+
+    <!-- Gênero -->
+    <div class="field">
+    <label for="genero">Selecione seu gênero:</label><br />
+    <input type="range" id="genero" name="genero" list="values" />
+
+    <datalist id="values">
+    <option value="0" label="Feminino"></option>
+    <option value="25" label="Masculino"></option>
+    <option value="50" label="Não-binário"></option>
+    <option value="75" label="Prefiro não informar"></option>
+    <option value="100" label="Outro"></option>
+    </datalist>
+    <% if (errors.genero) { %><div class="error"><%= errors.genero.msg %></div><% } %>
+    </div>
+
+
+    <button type="submit">Enviar</button>
+  </form>
+</body>
+</html>
