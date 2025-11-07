@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const { body, validationResult } = require('express-validator');
-
+const db = require('../db');
 /**
  * GET /contato – exibe o formulário.
  * Enviamos 'data' vazio e 'errors' vazio para facilitar o template.
@@ -13,6 +13,20 @@ router.get('/', (req, res) => {
     errors: {}
   });
 });
+// GET /contato/lista – tabela com os contatos cadastrados
+router.get('/lista', (req, res) => {
+  const rows = db.prepare(`
+    SELECT id, nome, email, idade, genero, interesses, mensagem, criado_em
+    FROM contatos
+    ORDER BY criado_em DESC
+  `).all();
+
+  res.render('contatos-lista', {
+    title: 'Lista de Contatos',
+    contatos: rows
+  });
+});
+
 
 /**
  * POST /contato – valida, sanitiza e decide: erro -> reexibir formulário; sucesso -> página de sucesso
@@ -61,23 +75,39 @@ router.post('/',
       aceite: req.body.aceite === 'on'
     };
 
-    if (!errors.isEmpty()) {
-      // Mapeamos erros por campo para facilitar no EJS
-      const mapped = errors.mapped(); // { campo: { msg, param, ... } }
-      return res.status(400).render('contato', {
-        title: 'Formulário de Contato',
-        data,
-        errors: mapped
-      });
-    }
-
-    // Aqui você poderia persistir no banco, enviar e-mail, etc.
-
-    return res.render('sucesso', {
-      title: 'Enviado com sucesso',
-      data
+  if (!errors.isEmpty()) {
+    const mapped = errors.mapped();
+    return res.status(400).render('contato', {
+      title: 'Formulário de Contato',
+      data,
+      errors: mapped
     });
   }
-);
+
+  // Sucesso: salvar no banco
+  const stmt = db.prepare(`
+    INSERT INTO contatos (nome, email, idade, genero, interesses, mensagem, aceite)
+    VALUES (@nome, @email, @idade, @genero, @interesses, @mensagem, @aceite)
+  `);
+
+  stmt.run({
+    nome: data.nome,
+    email: data.email,
+    idade: data.idade || null,
+    genero: data.genero || null,
+    interesses: Array.isArray(data.interesses)
+      ? data.interesses.join(',')
+      : (data.interesses || ''),
+    mensagem: data.mensagem,
+    aceite: data.aceite ? 1 : 0
+  });
+
+  // Depois de inserir, podemos mostrar página de sucesso
+  return res.render('sucesso', {
+    title: 'Enviado com sucesso',
+    data
+  });
+    } 
+  );
 
 module.exports = router;

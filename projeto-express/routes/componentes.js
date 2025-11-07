@@ -19,8 +19,8 @@ router.post('/',
     .isIn(['mario', 'luigi', 'peach', 'bowser']).withMessage('Selecione um nome válido.'),
 
     body('idade')
-    .trim().isLength({ min: 3, max: 60 }).withMessage('Nome deve ter entre 3 e 60 caracteres.')
-    .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/).withMessage('Nome contém caracteres inválidos.')
+    .trim().isLength({ min: 3, max: 60 }).withMessage('A idade deve ter entre 3 e 60 caracteres.')
+    .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/).withMessage('A idade contém caracteres inválidos.')
     .escape(),
 
     body('genero')
